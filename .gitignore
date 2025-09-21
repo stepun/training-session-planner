@@ -83,3 +83,4 @@ temp/
 
 # PDF test files
 *.pdf
+.vercel
