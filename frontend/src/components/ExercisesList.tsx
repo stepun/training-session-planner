@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SortableItem } from './SortableItem'
@@ -10,6 +10,8 @@ import { Exercise } from '@/types/training'
 
 export function ExercisesList() {
   const { session, addExercise, reorderExercises } = useTrainingStore()
+  const [lastAddedExerciseId, setLastAddedExerciseId] = useState<string | null>(null)
+  const exercisesContainerRef = useRef<HTMLDivElement>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -45,7 +47,32 @@ export function ExercisesList() {
       imageUrl: ''
     }
     addExercise(newExercise)
+    setLastAddedExerciseId(newExercise.id)
   }
+
+  // Автоскролл к новому упражнению
+  useEffect(() => {
+    if (lastAddedExerciseId && exercisesContainerRef.current) {
+      const timer = setTimeout(() => {
+        const newExerciseElement = document.querySelector(`[data-exercise-id="${lastAddedExerciseId}"]`)
+        if (newExerciseElement) {
+          newExerciseElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          })
+
+          // Фокус на первое поле ввода в новом упражнении
+          const firstInput = newExerciseElement.querySelector('input') as HTMLInputElement
+          if (firstInput) {
+            firstInput.focus()
+          }
+        }
+        setLastAddedExerciseId(null)
+      }, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [lastAddedExerciseId, session.exercises])
 
   return (
     <div className="space-y-4">
@@ -75,10 +102,12 @@ export function ExercisesList() {
             items={session.exercises.map(ex => ex.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-3">
+            <div className="space-y-3" ref={exercisesContainerRef}>
               {session.exercises.map((exercise, index) => (
                 <SortableItem key={exercise.id} id={exercise.id}>
-                  <ExerciseCard exercise={exercise} index={index} />
+                  <div data-exercise-id={exercise.id}>
+                    <ExerciseCard exercise={exercise} index={index} />
+                  </div>
                 </SortableItem>
               ))}
             </div>
