@@ -1,0 +1,19 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production.environment]
+  VITE_S3_URL = ""
+  VITE_S3_ACCESS_KEY = ""
+  VITE_S3_SECRET_KEY = ""
+  VITE_S3_API = "s3v4"
+  VITE_S3_PATH = "auto"

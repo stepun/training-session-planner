@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "buildCommand": "cd frontend && npm ci && npm run build",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
+  "installCommand": "cd frontend && npm ci",
+  "env": {
+    "VITE_S3_URL": "@vite_s3_url",
+    "VITE_S3_ACCESS_KEY": "@vite_s3_access_key",
+    "VITE_S3_SECRET_KEY": "@vite_s3_secret_key",
+    "VITE_S3_API": "@vite_s3_api",
+    "VITE_S3_PATH": "@vite_s3_path"
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
