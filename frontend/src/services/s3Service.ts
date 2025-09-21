@@ -13,7 +13,7 @@ export class S3Service {
     this.config = config
   }
 
-  async uploadFile(file: File, fileName: string): Promise<string> {
+  async uploadFile(file: File, _fileName: string): Promise<string> {
     const formData = new FormData()
     formData.append('file', file)
 
@@ -40,7 +40,7 @@ export class S3Service {
     }
   }
 
-  async uploadFileBase64(file: File, fileName: string): Promise<string> {
+  async uploadFileBase64(file: File, _fileName: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = () => {

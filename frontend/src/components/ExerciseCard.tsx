@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Trash2, GripVertical, Plus, X, Upload, Image as ImageIcon } from 'lucide-react'
 import { useTrainingStore } from '@/store/trainingStore'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { getS3Service } from '@/services/s3Service'
 
 interface ExerciseCardProps {
