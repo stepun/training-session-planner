@@ -88,7 +88,7 @@ function App() {
             </div>
 
             {/* Export Buttons */}
-            <div style={{ width: '210mm', margin: '0 auto' }}>
+            <div style={{ width: '210mm', margin: '0 auto', marginTop: '20px' }}>
               <div className="px-8 grid grid-cols-2 gap-3">
                 <Button
                   onClick={handleExportPDF}
