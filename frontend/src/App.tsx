@@ -88,8 +88,8 @@ function App() {
             </div>
 
             {/* Export Buttons */}
-            <div className="px-8">
-              <div className="grid grid-cols-2 gap-3">
+            <div style={{ width: '210mm', margin: '0 auto' }}>
+              <div className="px-8 grid grid-cols-2 gap-3">
                 <Button
                   onClick={handleExportPDF}
                   className="w-full bg-green-600 hover:bg-green-700"
