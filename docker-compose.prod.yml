@@ -12,6 +12,7 @@ services:
     environment:
       - NODE_ENV=production
       - CHOKIDAR_USEPOLLING=true
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
       - VITE_S3_URL=https://web-storage.sh3.su/api/v1/service-account-credentials
       - VITE_S3_ACCESS_KEY=pCXbOilHuSP1d4NlGztc
       - VITE_S3_SECRET_KEY=O5xVdSiF3JCXJCIQQcgDe6iDJ9ZpuRXdkWfZXzWk
