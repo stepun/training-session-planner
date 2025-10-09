@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import { Card } from '@/components/ui/card'
 import { ExerciseCategory, Exercise } from '@/types/training'
 import { useEffect, useRef, useState } from 'react'
+import { getLoadLevelGradientColor, getLoadLevelBgColor as getLoadLevelBg } from '@/utils/colorUtils'
 
 export function TrainingPreview() {
   const { session } = useTrainingStore()
@@ -33,19 +34,6 @@ export function TrainingPreview() {
     return abbreviations.length > 0 ? abbreviations.join('/') : 'GENERAL'
   }
 
-  const getLoadLevelColor = (level: number): string => {
-    if (level <= 3) return '#10b981'
-    if (level <= 6) return '#f59e0b'
-    if (level <= 8) return '#f97316'
-    return '#ef4444'
-  }
-
-  const getLoadLevelBgColor = (level: number): string => {
-    if (level <= 3) return 'bg-green-100'
-    if (level <= 6) return 'bg-yellow-100'
-    if (level <= 8) return 'bg-orange-100'
-    return 'bg-red-100'
-  }
 
   const getCategoryLabel = (category: ExerciseCategory) => {
     switch (category) {
@@ -384,9 +372,15 @@ export function TrainingPreview() {
               <div>
                 <div className="text-gray-500 uppercase text-[10px] mb-1">{t('PREVIEW_LOAD')}</div>
                 <div className="flex items-center gap-2">
-                  <div className="font-semibold text-[11px]">{session.loadLevel}/10</div>
-                  <div className={`w-2 h-2 rounded-full ${getLoadLevelBgColor(session.loadLevel)} border-2`}
-                       style={{ borderColor: getLoadLevelColor(session.loadLevel) }}>
+                  <div className="font-semibold text-[11px]"
+                       style={{ color: getLoadLevelGradientColor(session.loadLevel) }}>
+                    {session.loadLevel}/10
+                  </div>
+                  <div className="w-3 h-3 rounded-full border-2"
+                       style={{
+                         backgroundColor: getLoadLevelBg(session.loadLevel),
+                         borderColor: getLoadLevelGradientColor(session.loadLevel)
+                       }}>
                   </div>
                 </div>
               </div>

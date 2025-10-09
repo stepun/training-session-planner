@@ -110,8 +110,23 @@ npm run test
 frontend/
 ├── src/
 │   ├── components/     # React компоненты
+│   │   ├── GeneralDataForm.tsx
+│   │   ├── ExerciseCard.tsx
+│   │   ├── ExercisesList.tsx
+│   │   ├── TrainingPreview.tsx
+│   │   ├── PDFDocument.tsx
+│   │   ├── LanguageSwitcher.tsx
+│   │   └── ui/         # shadcn/ui компоненты
 │   ├── types/          # TypeScript типы
+│   │   └── training.ts
 │   ├── store/          # Zustand store
+│   │   ├── trainingStore.ts
+│   │   └── languageStore.ts
+│   ├── hooks/          # React hooks
+│   │   └── useTranslation.ts
+│   ├── locales/        # Файлы переводов
+│   │   ├── ru-RU.json
+│   │   └── en-US.json
 │   ├── services/       # API и внешние сервисы
 │   └── App.tsx
 ├── public/
@@ -122,8 +137,41 @@ frontend/
 - `GeneralDataForm` - форма основных данных тренировки
 - `ExerciseCard` - карточка упражнения с drag&drop
 - `ExercisesList` - список упражнений с сортировкой
-- `TrainingPreview` - превью тренировки
-- `PDFDocument` - генерация PDF
+- `TrainingPreview` - превью тренировки с динамической пагинацией
+- `PDFDocument` - генерация PDF с синхронизированной пагинацией
+- `LanguageSwitcher` - переключение языка интерфейса
+
+### Локализация
+Проект поддерживает мультиязычность:
+- `frontend/src/locales/ru-RU.json` - русский язык
+- `frontend/src/locales/en-US.json` - английский язык
+- `frontend/src/store/languageStore.ts` - Zustand store для управления языком
+- `frontend/src/hooks/useTranslation.ts` - хук для переводов
+
+### Пагинация Preview и PDF
+**Важно:** Логика пагинации в `TrainingPreview.tsx` и `PDFDocument.tsx` должна быть синхронизирована!
+
+**Алгоритм пагинации:**
+1. Рассчитываем доступную высоту страницы БЕЗ учета футера
+2. Размещаем упражнения на страницах по высоте
+3. После размещения проверяем: если одна страница И упражнения + футер не влезают → создаем пустую вторую страницу
+4. Футер всегда на последней странице
+5. На пустых страницах (только с футером) не показываем заголовок
+
+**Константы пагинации должны соответствовать:**
+```typescript
+// Preview (px)
+const A4_HEIGHT_PX = 1122
+const PADDING_PX = 30 * 3.78 * 2  // 227px
+const FIRST_PAGE_HEADER_PX = 150
+const TOTAL_DURATION_PX = 25
+
+// PDF (points, 1px ≈ 0.75pt)
+const A4_HEIGHT = 842
+const PADDING = 30 * 2  // 60pt
+const FIRST_PAGE_HEADER = 120
+const TOTAL_DURATION_HEIGHT = 35
+```
 
 ## Безопасность в коде
 
@@ -170,7 +218,26 @@ try {
 - [ ] Обработаны ошибки
 - [ ] Проверены права доступа
 - [ ] Тестирована функциональность
+- [ ] Синхронизирована пагинация Preview и PDF (если менялась)
+- [ ] Обновлены переводы в ru-RU.json и en-US.json (если добавлялся текст)
+
+## Известные особенности
+
+### Пагинация
+- Preview использует реальные размеры DOM элементов для точных расчетов
+- PDF использует эвристическую оценку высоты упражнений
+- Если пагинация не совпадает, проверьте константы высот в обоих компонентах
+
+### Шрифты
+- Preview: использует системный шрифт через Tailwind
+- PDF: использует Roboto (загружается из CDN)
+- Разница в шрифтах может влиять на высоту текста
+
+### Изображения
+- Preview: максимум 190px x 190px
+- PDF: максимум 142pt x 142pt (~189px x 189px)
+- Соотношение размеров должно оставаться синхронизированным
 
 ---
 
-**ВАЖНО**: Этот файл служит напоминанием о правилах безопасности. Следуйте этим принципам во всех проектах!
+**ВАЖНО**: Этот файл служит напоминанием о правилах разработки. Следуйте этим принципам при работе с проектом!

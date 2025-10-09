@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 import { Locale } from '@/store/languageStore'
 import enUS from '@/locales/en-US.json'
 import ruRU from '@/locales/ru-RU.json'
+import { getLoadLevelGradientColor, rgbToHex } from '@/utils/colorUtils'
 
 const translations: Record<Locale, Record<string, string>> = {
   'en-US': enUS,
@@ -203,15 +204,10 @@ export function PDFDocument({ session, locale }: PDFDocumentProps) {
     return abbreviations.length > 0 ? abbreviations.join('/') : 'GENERAL'
   }
 
+  // Используем функцию градиента и конвертируем RGB в HEX для PDF
   const getLoadLevelColor = (level: number): string => {
-    // Зеленый (1-3): #10b981
-    // Желтый (4-6): #f59e0b
-    // Оранжевый (7-8): #f97316
-    // Красный (9-10): #ef4444
-    if (level <= 3) return '#10b981'
-    if (level <= 6) return '#f59e0b'
-    if (level <= 8) return '#f97316'
-    return '#ef4444'
+    const rgbColor = getLoadLevelGradientColor(level)
+    return rgbToHex(rgbColor)
   }
 
   const getCategoryLabel = (category: ExerciseCategory) => {
@@ -420,7 +416,9 @@ export function PDFDocument({ session, locale }: PDFDocumentProps) {
             <View style={styles.headerItem}>
               <Text style={styles.headerLabel}>{t('PDF_LOAD')}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.headerValue}>{session.loadLevel}/10</Text>
+                <Text style={[styles.headerValue, { color: getLoadLevelColor(session.loadLevel) }]}>
+                  {session.loadLevel}/10
+                </Text>
                 <View style={[styles.loadIndicator, { backgroundColor: getLoadLevelColor(session.loadLevel) }]} />
               </View>
             </View>
