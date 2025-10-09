@@ -21,6 +21,7 @@ export interface Exercise {
   variations?: string // вариации упражнения
   area?: string // размер площадки/зоны
   imageUrl?: string // URL схемы/диаграммы упражнения
+  diagramSnapshot?: string // JSON snapshot tldraw для редактирования схемы
 }
 
 export interface TrainingSession {

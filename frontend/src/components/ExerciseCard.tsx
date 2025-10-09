@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Trash2, GripVertical, Plus, X, Upload, Image as ImageIcon } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Trash2, GripVertical, Plus, X, Upload, Image as ImageIcon, Pencil } from 'lucide-react'
 import { useTrainingStore } from '@/store/trainingStore'
 import { useTranslation } from '@/hooks/useTranslation'
 import { useState, useRef } from 'react'
 import { getS3Service } from '@/services/s3Service'
+import { DiagramEditor } from '@/components/DiagramEditor'
 
 interface ExerciseCardProps {
   exercise: Exercise
@@ -24,6 +26,7 @@ export function ExerciseCard({ exercise, index, dragHandleProps, isExpanded, onT
   const { t } = useTranslation()
   const [newCoachingPoint, setNewCoachingPoint] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+  const [showDiagramEditor, setShowDiagramEditor] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const getTypeColor = (type: Exercise['type']) => {
@@ -158,7 +161,28 @@ export function ExerciseCard({ exercise, index, dragHandleProps, isExpanded, onT
   }
 
   const removeImage = () => {
-    updateExercise(exercise.id, { imageUrl: undefined })
+    updateExercise(exercise.id, { imageUrl: undefined, diagramSnapshot: undefined })
+  }
+
+  const handleDiagramSave = (imageUrl: string, snapshot: string) => {
+    console.log('ExerciseCard: handleDiagramSave called!')
+    console.log('ExerciseCard: imageUrl length:', imageUrl.length)
+    console.log('ExerciseCard: snapshot length:', snapshot.length)
+    try {
+      updateExercise(exercise.id, {
+        imageUrl,
+        diagramSnapshot: snapshot
+      })
+      console.log('ExerciseCard: updateExercise completed')
+      setShowDiagramEditor(false)
+      console.log('ExerciseCard: dialog closed')
+    } catch (error) {
+      console.error('ExerciseCard: Error in handleDiagramSave:', error)
+    }
+  }
+
+  const handleDiagramCancel = () => {
+    setShowDiagramEditor(false)
   }
 
   // Свернутая версия
@@ -433,12 +457,24 @@ export function ExerciseCard({ exercise, index, dragHandleProps, isExpanded, onT
                   className="w-full h-40 object-contain rounded"
                 />
                 <div className="absolute top-2 right-2 flex gap-2">
+                  {exercise.diagramSnapshot && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setShowDiagramEditor(true)}
+                      title="Edit diagram"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
                   <Button
                     type="button"
                     variant="secondary"
                     size="sm"
                     onClick={handleImageClick}
                     disabled={isUploading}
+                    title="Upload new image"
                   >
                     <Upload className="h-4 w-4" />
                   </Button>
@@ -447,6 +483,7 @@ export function ExerciseCard({ exercise, index, dragHandleProps, isExpanded, onT
                     variant="destructive"
                     size="sm"
                     onClick={removeImage}
+                    title="Remove image"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -456,15 +493,26 @@ export function ExerciseCard({ exercise, index, dragHandleProps, isExpanded, onT
               <div className="text-center py-8">
                 <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-500 mb-4">{t('EXERCISE_FIELD_DIAGRAM_UPLOAD')}</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleImageClick}
-                  disabled={isUploading}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  {isUploading ? t('EXERCISE_FIELD_DIAGRAM_UPLOADING') : t('EXERCISE_FIELD_DIAGRAM_BUTTON')}
-                </Button>
+                <div className="flex gap-3 justify-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleImageClick}
+                    disabled={isUploading}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {isUploading ? t('EXERCISE_FIELD_DIAGRAM_UPLOADING') : t('EXERCISE_FIELD_DIAGRAM_BUTTON')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowDiagramEditor(true)}
+                    className="bg-blue-50 hover:bg-blue-100"
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    {t('BUTTON_DRAW_DIAGRAM')}
+                  </Button>
+                </div>
               </div>
             )}
             <input
@@ -489,6 +537,24 @@ export function ExerciseCard({ exercise, index, dragHandleProps, isExpanded, onT
           />
         </div>
       </CardContent>
+
+      {/* Diagram Editor Modal */}
+      <Dialog open={showDiagramEditor} onOpenChange={setShowDiagramEditor}>
+        <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-2 flex-shrink-0">
+            <DialogTitle>
+              {exercise.diagramSnapshot ? t('DIAGRAM_EDITOR_TITLE_EDIT') : t('DIAGRAM_EDITOR_TITLE_NEW')}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 px-6 pb-6 overflow-hidden">
+            <DiagramEditor
+              initialSnapshot={exercise.diagramSnapshot}
+              onSave={handleDiagramSave}
+              onCancel={handleDiagramCancel}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }

@@ -12,11 +12,11 @@ services:
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
-      - VITE_S3_URL=https://web-storage.sh3.su/api/v1/service-account-credentials
-      - VITE_S3_ACCESS_KEY=pCXbOilHuSP1d4NlGztc
-      - VITE_S3_SECRET_KEY=O5xVdSiF3JCXJCIQQcgDe6iDJ9ZpuRXdkWfZXzWk
-      - VITE_S3_API=s3v4
-      - VITE_S3_PATH=auto
+      - VITE_S3_ENDPOINT=${VITE_S3_ENDPOINT:-https://storage.sh3.su}
+      - VITE_S3_BUCKET=${VITE_S3_BUCKET:-training-diagrams}
+      - VITE_S3_ACCESS_KEY=${VITE_S3_ACCESS_KEY}
+      - VITE_S3_SECRET_KEY=${VITE_S3_SECRET_KEY}
+      - VITE_S3_REGION=${VITE_S3_REGION:-us-east-1}
     stdin_open: true
     tty: true
 

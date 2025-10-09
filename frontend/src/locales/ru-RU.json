@@ -1,5 +1,5 @@
 {
-  "H1_TITLE": "Планировщик футбольных тренировок",
+  "H1_TITLE": "Планировщик тренировок",
   "H1_SUBTITLE": "Создавайте и экспортируйте профессиональные планы тренировок",
 
   "BUTTON_EXPORT_PDF": "Скачать PDF",
@@ -106,6 +106,16 @@
   "ERROR_IMAGE_TYPE": "Пожалуйста, выберите изображение",
   "ERROR_IMAGE_SIZE": "Размер файла не должен превышать 5MB",
   "ERROR_IMAGE_UPLOAD": "Ошибка загрузки изображения",
+
+  "BUTTON_DRAW_DIAGRAM": "Нарисовать схему",
+  "BUTTON_EDIT_DIAGRAM": "Редактировать схему",
+  "DIAGRAM_EDITOR_TITLE_NEW": "Нарисовать схему упражнения",
+  "DIAGRAM_EDITOR_TITLE_EDIT": "Редактировать схему",
+  "BUTTON_CANCEL": "Отмена",
+  "BUTTON_SAVE": "Сохранить",
+  "BUTTON_SAVING": "Сохранение...",
+  "ERROR_DIAGRAM_EMPTY": "Пожалуйста, нарисуйте что-нибудь",
+  "ERROR_DIAGRAM_SAVE": "Не удалось сохранить схему",
 
   "MINUTES_SHORT": "мин"
 }

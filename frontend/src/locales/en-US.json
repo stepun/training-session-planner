@@ -1,5 +1,5 @@
 {
-  "H1_TITLE": "Football Training Session Planner",
+  "H1_TITLE": "Training Session Planner",
   "H1_SUBTITLE": "Create and export professional training session plans",
 
   "BUTTON_EXPORT_PDF": "Download PDF",
@@ -106,6 +106,16 @@
   "ERROR_IMAGE_TYPE": "Please select an image",
   "ERROR_IMAGE_SIZE": "File size must not exceed 5MB",
   "ERROR_IMAGE_UPLOAD": "Error uploading image",
+
+  "BUTTON_DRAW_DIAGRAM": "Draw Diagram",
+  "BUTTON_EDIT_DIAGRAM": "Edit Diagram",
+  "DIAGRAM_EDITOR_TITLE_NEW": "Draw Exercise Diagram",
+  "DIAGRAM_EDITOR_TITLE_EDIT": "Edit Diagram",
+  "BUTTON_CANCEL": "Cancel",
+  "BUTTON_SAVE": "Save",
+  "BUTTON_SAVING": "Saving...",
+  "ERROR_DIAGRAM_EMPTY": "Please draw something first",
+  "ERROR_DIAGRAM_SAVE": "Failed to save diagram",
 
   "MINUTES_SHORT": "min"
 }
