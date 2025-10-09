@@ -104,42 +104,65 @@ npm run test
 - **PDF**: @react-pdf/renderer
 - **Drag & Drop**: @dnd-kit
 - **File Upload**: S3/MinIO integration
+- **Support Chat**: UserChat компонент для связи с администратором
+
+### Backend (Node.js + Express)
+- **Framework**: Express.js
+- **Telegram Bot**: node-telegram-bot-api
+- **API**: REST endpoints для чата поддержки
+- **Storage**: In-memory Map (рекомендуется заменить на БД в продакшене)
 
 ### Структура файлов
 ```
-frontend/
-├── src/
-│   ├── components/     # React компоненты
-│   │   ├── GeneralDataForm.tsx
-│   │   ├── ExerciseCard.tsx
-│   │   ├── ExercisesList.tsx
-│   │   ├── TrainingPreview.tsx
-│   │   ├── PDFDocument.tsx
-│   │   ├── LanguageSwitcher.tsx
-│   │   └── ui/         # shadcn/ui компоненты
-│   ├── types/          # TypeScript типы
-│   │   └── training.ts
-│   ├── store/          # Zustand store
-│   │   ├── trainingStore.ts
-│   │   └── languageStore.ts
-│   ├── hooks/          # React hooks
-│   │   └── useTranslation.ts
-│   ├── locales/        # Файлы переводов
-│   │   ├── ru-RU.json
-│   │   └── en-US.json
-│   ├── services/       # API и внешние сервисы
-│   └── App.tsx
-├── public/
-└── Dockerfile.dev
+training_generator/
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # React компоненты
+│   │   │   ├── GeneralDataForm.tsx
+│   │   │   ├── ExerciseCard.tsx
+│   │   │   ├── ExercisesList.tsx
+│   │   │   ├── TrainingPreview.tsx
+│   │   │   ├── PDFDocument.tsx
+│   │   │   ├── LanguageSwitcher.tsx
+│   │   │   ├── UserChat.tsx      # Виджет чата поддержки
+│   │   │   └── ui/               # shadcn/ui компоненты
+│   │   ├── types/          # TypeScript типы
+│   │   │   └── training.ts
+│   │   ├── store/          # Zustand store
+│   │   │   ├── trainingStore.ts
+│   │   │   └── languageStore.ts
+│   │   ├── hooks/          # React hooks
+│   │   │   └── useTranslation.ts
+│   │   ├── locales/        # Файлы переводов
+│   │   │   ├── ru-RU.json
+│   │   │   └── en-US.json
+│   │   ├── services/       # API и внешние сервисы
+│   │   └── App.tsx
+│   ├── public/
+│   └── Dockerfile.dev
+├── backend/
+│   ├── index.js           # Express сервер + Telegram бот
+│   ├── package.json
+│   └── Dockerfile
+├── docker-compose.yml
+└── .env
 ```
 
 ### Основные компоненты
+
+**Frontend:**
 - `GeneralDataForm` - форма основных данных тренировки
 - `ExerciseCard` - карточка упражнения с drag&drop
 - `ExercisesList` - список упражнений с сортировкой
 - `TrainingPreview` - превью тренировки с динамической пагинацией
 - `PDFDocument` - генерация PDF с синхронизированной пагинацией
 - `LanguageSwitcher` - переключение языка интерфейса
+- `UserChat` - виджет поддержки с синей кнопкой в правом нижнем углу
+
+**Backend:**
+- Express REST API на порту 3001 (внутренний) / 3002 (внешний)
+- Telegram Bot с polling для обработки сообщений
+- In-memory хранилище сессий пользователей
 
 ### Локализация
 Проект поддерживает мультиязычность:
@@ -221,6 +244,91 @@ try {
 - [ ] Синхронизирована пагинация Preview и PDF (если менялась)
 - [ ] Обновлены переводы в ru-RU.json и en-US.json (если добавлялся текст)
 
+## Чат поддержки (Support Chat)
+
+### Архитектура чата
+1. **Веб-пользователь** (сайт) → синяя кнопка чата → отправляет сообщение
+2. **Frontend** (`UserChat.tsx`) → POST `/api/user-send` → Backend
+3. **Backend** (`index.js`) → сохраняет в Map → отправляет в Telegram администратору
+4. **Администратор** (Telegram) → видит сообщение с ID пользователя
+5. **Администратор** → `/reply <userId> Текст ответа`
+6. **Backend** → сохраняет ответ в Map
+7. **Frontend** → polling GET `/api/user-messages/<userId>` каждые 3 секунды → видит ответ
+
+### API Endpoints
+
+**GET `/api/user-messages/:userId`**
+- Получить все сообщения для пользователя
+- Возвращает: `{ messages: [{ from: 'user'|'admin', text: string, timestamp: number }] }`
+
+**POST `/api/user-send`**
+- Отправить сообщение от веб-пользователя
+- Body: `{ userId: string, message: string }`
+- Действия: сохраняет сообщение, отправляет в Telegram админу
+
+**GET `/api/sessions`**
+- Получить все активные сессии пользователей (для админ-панели)
+- Возвращает массив сессий с сообщениями
+
+**POST `/api/send`**
+- Отправить сообщение от админа пользователю через веб-интерфейс
+- Body: `{ chatId: string, message: string }`
+
+### Telegram Bot Commands
+
+**`/start`** - Начать чат с ботом (для Telegram-пользователей)
+
+**`/reply <userId> <текст>`** - Ответить пользователю
+- Пример: `/reply web_1760035933883_ccpcesgtz Привет!`
+- Для веб-пользователей (ID начинается с `web_`) сообщение сохраняется в базе
+- Для Telegram-пользователей (числовой ID) отправляется через бота
+
+**`/users`** - Список всех активных пользователей с количеством сообщений
+
+### Особенности реализации
+
+**UserID генерация:**
+```typescript
+const userId = `web_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+localStorage.setItem('chatUserId', userId)
+```
+
+**Polling для обновлений:**
+- Каждые 3 секунды фронтенд запрашивает новые сообщения
+- Новые сообщения добавляются в локальный state
+- Автоматический скролл к последнему сообщению
+
+**Различие между типами пользователей:**
+- `web_...` - пользователи с сайта (сообщения только в базе)
+- Числовой ID - Telegram пользователи (сообщения через бота)
+
+### Nginx конфигурация
+
+**ВАЖНО:** `/api/*` должен проксироваться к бэкенду с сохранением `/api/` в пути!
+
+```nginx
+location /api/ {
+    proxy_pass http://localhost:3002/api/;  # Важно: /api/ в конце!
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    # ... остальные заголовки
+}
+```
+
+### Переменные окружения
+
+```env
+# Backend
+TELEGRAM_BOT_TOKEN=your_bot_token
+ADMIN_CHAT_ID=your_telegram_id
+PORT=3001
+
+# Frontend
+VITE_API_URL=https://yourdomain.com/api
+```
+
 ## Известные особенности
 
 ### Пагинация
@@ -237,6 +345,12 @@ try {
 - Preview: максимум 190px x 190px
 - PDF: максимум 142pt x 142pt (~189px x 189px)
 - Соотношение размеров должно оставаться синхронизированным
+
+### Чат поддержки
+- Сообщения хранятся в памяти (Map), при перезапуске теряются
+- В продакшене рекомендуется использовать Redis или базу данных
+- Polling каждые 3 секунды - для продакшена рекомендуется WebSocket
+- Web userID генерируется случайно и хранится в localStorage
 
 ---
 
