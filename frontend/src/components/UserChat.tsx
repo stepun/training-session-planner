@@ -38,7 +38,7 @@ export function UserChat() {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/user-messages/${userId}`)
+        const response = await fetch(`${API_URL}/user-messages/${userId}`)
         if (response.ok) {
           const data = await response.json()
           setMessages(data.messages || [])
@@ -64,7 +64,7 @@ export function UserChat() {
 
     setSending(true)
     try {
-      const response = await fetch(`${API_URL}/api/user-send`, {
+      const response = await fetch(`${API_URL}/user-send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
