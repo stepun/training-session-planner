@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Slider } from '@/components/ui/slider'
+import { LoadLevelSlider } from '@/components/ui/load-level-slider'
 import { useTrainingStore } from '@/store/trainingStore'
 import { useTranslation } from '@/hooks/useTranslation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -89,7 +89,7 @@ export function GeneralDataForm() {
               />
             </div>
           </div>
-          <Slider
+          <LoadLevelSlider
             id="load"
             min={1}
             max={10}
