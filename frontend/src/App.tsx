@@ -88,21 +88,23 @@ function App() {
             </div>
 
             {/* Export Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                onClick={handleExportPDF}
-                className="w-full bg-green-600 hover:bg-green-700"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {t('BUTTON_EXPORT_PDF')}
-              </Button>
-              <Button
-                onClick={handleExportJPEG}
-                className="w-full bg-blue-600 hover:bg-blue-700"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {t('BUTTON_EXPORT_JPEG')}
-              </Button>
+            <div className="px-8">
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={handleExportPDF}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('BUTTON_EXPORT_PDF')}
+                </Button>
+                <Button
+                  onClick={handleExportJPEG}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('BUTTON_EXPORT_JPEG')}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
