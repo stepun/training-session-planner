@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/slider'
 import { useTrainingStore } from '@/store/trainingStore'
 import { useTranslation } from '@/hooks/useTranslation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { getLoadLevelGradientColor, getLoadLevelBgColor } from '@/utils/colorUtils'
 
 export function GeneralDataForm() {
   const { session, updateSession } = useTrainingStore()
@@ -70,7 +71,24 @@ export function GeneralDataForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="load">{t('FIELD_LOAD_LEVEL')}: {session.loadLevel}/10</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="load">{t('FIELD_LOAD_LEVEL')}</Label>
+            <div className="flex items-center gap-2">
+              <span
+                className="font-semibold text-sm"
+                style={{ color: getLoadLevelGradientColor(session.loadLevel) }}
+              >
+                {session.loadLevel}/10
+              </span>
+              <div
+                className="w-4 h-4 rounded-full border-2"
+                style={{
+                  backgroundColor: getLoadLevelBgColor(session.loadLevel),
+                  borderColor: getLoadLevelGradientColor(session.loadLevel)
+                }}
+              />
+            </div>
+          </div>
           <Slider
             id="load"
             min={1}
