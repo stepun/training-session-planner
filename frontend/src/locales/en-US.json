@@ -2,9 +2,9 @@
   "H1_TITLE": "Football Training Session Planner",
   "H1_SUBTITLE": "Create and export professional training session plans",
 
-  "BUTTON_EXPORT_PDF": "Export PDF",
-  "BUTTON_EXPORT_JPEG": "Export JPEG",
-  "BUTTON_EXPORT": "Export",
+  "BUTTON_EXPORT_PDF": "Download PDF",
+  "BUTTON_EXPORT_JPEG": "Download JPEG",
+  "BUTTON_EXPORT": "Download",
 
   "BLOCK_TITLE_GENERAL_DATA": "General Data",
   "BLOCK_DESCRIPTION_GENERAL_DATA": "Enter training session information",

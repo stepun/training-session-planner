@@ -2,9 +2,9 @@
   "H1_TITLE": "Планировщик футбольных тренировок",
   "H1_SUBTITLE": "Создавайте и экспортируйте профессиональные планы тренировок",
 
-  "BUTTON_EXPORT_PDF": "Экспортировать PDF",
-  "BUTTON_EXPORT_JPEG": "Экспортировать JPEG",
-  "BUTTON_EXPORT": "Экспортировать",
+  "BUTTON_EXPORT_PDF": "Скачать PDF",
+  "BUTTON_EXPORT_JPEG": "Скачать JPEG",
+  "BUTTON_EXPORT": "Скачать",
 
   "BLOCK_TITLE_GENERAL_DATA": "Общие данные",
   "BLOCK_DESCRIPTION_GENERAL_DATA": "Введите информацию о тренировке",

@@ -88,37 +88,7 @@ function App() {
               <h1 className="text-2xl font-bold">{t('H1_TITLE')}</h1>
               <p className="text-gray-600 text-sm">{t('H1_SUBTITLE')}</p>
             </div>
-            <div className="flex items-center gap-3">
-              <LanguageSwitcher />
-              <div className="relative" ref={exportMenuRef}>
-                <Button
-                  onClick={() => setShowExportMenu(!showExportMenu)}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  {t('BUTTON_EXPORT')}
-                  <ChevronDown className="h-4 w-4 ml-2" />
-                </Button>
-                {showExportMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
-                    <div className="py-1">
-                      <button
-                        onClick={handleExportPDF}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        {t('BUTTON_EXPORT_PDF')}
-                      </button>
-                      <button
-                        onClick={handleExportJPEG}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        {t('BUTTON_EXPORT_JPEG')}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </div>
@@ -133,8 +103,40 @@ function App() {
           </div>
 
           {/* Right Panel - Preview */}
-          <div className="lg:sticky lg:top-6" id="training-preview">
-            <TrainingPreview />
+          <div className="space-y-4">
+            <div id="training-preview">
+              <TrainingPreview />
+            </div>
+
+            {/* Export Button */}
+            <div className="relative" ref={exportMenuRef}>
+              <Button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                {t('BUTTON_EXPORT')}
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+              {showExportMenu && (
+                <div className="absolute left-0 mt-2 w-full bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                  <div className="py-1">
+                    <button
+                      onClick={handleExportPDF}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {t('BUTTON_EXPORT_PDF')}
+                    </button>
+                    <button
+                      onClick={handleExportJPEG}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {t('BUTTON_EXPORT_JPEG')}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
