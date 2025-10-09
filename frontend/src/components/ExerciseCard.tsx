@@ -8,9 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Trash2, GripVertical, Plus, X, Upload, Image as ImageIcon, Pencil } from 'lucide-react'
 import { useTrainingStore } from '@/store/trainingStore'
 import { useTranslation } from '@/hooks/useTranslation'
-import { useState, useRef } from 'react'
+import { useState, useRef, lazy, Suspense } from 'react'
 import { getS3Service } from '@/services/s3Service'
-import { DiagramEditor } from '@/components/DiagramEditor'
+
+// Lazy load DiagramEditor (тяжелая библиотека tldraw)
+const DiagramEditor = lazy(() => import('@/components/DiagramEditor').then(module => ({ default: module.DiagramEditor })))
 
 interface ExerciseCardProps {
   exercise: Exercise
@@ -547,11 +549,20 @@ export function ExerciseCard({ exercise, index, dragHandleProps, isExpanded, onT
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 px-6 pb-6 overflow-hidden">
-            <DiagramEditor
-              initialSnapshot={exercise.diagramSnapshot}
-              onSave={handleDiagramSave}
-              onCancel={handleDiagramCancel}
-            />
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-600">{t('LOADING_MODULES') || 'Loading editor...'}</p>
+                </div>
+              </div>
+            }>
+              <DiagramEditor
+                initialSnapshot={exercise.diagramSnapshot}
+                onSave={handleDiagramSave}
+                onCancel={handleDiagramCancel}
+              />
+            </Suspense>
           </div>
         </DialogContent>
       </Dialog>

@@ -8,14 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { useTrainingStore } from '@/store/trainingStore'
 import { useTranslation } from '@/hooks/useTranslation'
-import { pdf } from '@react-pdf/renderer'
-import { PDFDocument } from '@/components/PDFDocument'
-import html2canvas from 'html2canvas'
 
 function App() {
   const { session } = useTrainingStore()
   const { t, locale } = useTranslation()
   const [isLoading, setIsLoading] = useState(true)
+  const [isExporting, setIsExporting] = useState(false)
 
   useEffect(() => {
     // Simulate app initialization
@@ -27,23 +25,41 @@ function App() {
   }, [])
 
   const handleExportPDF = async () => {
-    const doc = <PDFDocument session={session} locale={locale} />
-    const blob = await pdf(doc).toBlob()
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `${session.sessionName || 'training-session'}.pdf`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    setIsExporting(true)
+    try {
+      // Lazy load PDF dependencies
+      const [{ pdf }, { PDFDocument }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/PDFDocument')
+      ])
+
+      const doc = <PDFDocument session={session} locale={locale} />
+      const blob = await pdf(doc).toBlob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${session.sessionName || 'training-session'}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error exporting PDF:', error)
+      alert('Failed to export PDF')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   const handleExportJPEG = async () => {
     const element = document.getElementById('training-preview')
     if (!element) return
 
+    setIsExporting(true)
     try {
+      // Lazy load html2canvas
+      const html2canvas = (await import('html2canvas')).default
+
       const canvas = await html2canvas(element, {
         scale: 2,
         backgroundColor: '#ffffff',
@@ -62,10 +78,12 @@ function App() {
           document.body.removeChild(link)
           URL.revokeObjectURL(url)
         }
+        setIsExporting(false)
       }, 'image/jpeg', 0.95)
     } catch (error) {
       console.error('Error exporting JPEG:', error)
       alert('Failed to export JPEG')
+      setIsExporting(false)
     }
   }
 
@@ -108,17 +126,37 @@ function App() {
               <div className="px-8 grid grid-cols-2 gap-3">
                 <Button
                   onClick={handleExportPDF}
-                  className="w-full bg-green-600 hover:bg-green-700"
+                  disabled={isExporting}
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50"
                 >
-                  <Download className="h-4 w-4 mr-2" />
-                  {t('BUTTON_EXPORT_PDF')}
+                  {isExporting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      {t('BUTTON_SAVING') || 'Exporting...'}
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      {t('BUTTON_EXPORT_PDF')}
+                    </>
+                  )}
                 </Button>
                 <Button
                   onClick={handleExportJPEG}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={isExporting}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
                 >
-                  <Download className="h-4 w-4 mr-2" />
-                  {t('BUTTON_EXPORT_JPEG')}
+                  {isExporting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      {t('BUTTON_SAVING') || 'Exporting...'}
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      {t('BUTTON_EXPORT_JPEG')}
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

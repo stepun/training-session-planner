@@ -10,12 +10,16 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         port: 5173,
+        strictPort: true,
+        hmr: {
+            clientPort: 443,
+            protocol: 'wss',
+            host: 'trainingplanner.sh3.su',
+        },
         watch: {
             usePolling: true,
             interval: 1000,
         },
-        hmr: {
-            port: 5173,
-        },
+        proxy: {},
     },
 });
