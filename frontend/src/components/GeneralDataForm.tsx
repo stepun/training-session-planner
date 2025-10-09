@@ -3,31 +3,33 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Slider } from '@/components/ui/slider'
 import { useTrainingStore } from '@/store/trainingStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function GeneralDataForm() {
   const { session, updateSession } = useTrainingStore()
+  const { t } = useTranslation()
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>General Data</CardTitle>
-        <CardDescription>Enter training session information</CardDescription>
+        <CardTitle>{t('BLOCK_TITLE_GENERAL_DATA')}</CardTitle>
+        <CardDescription>{t('BLOCK_DESCRIPTION_GENERAL_DATA')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="sessionName">Session Name</Label>
+          <Label htmlFor="sessionName">{t('FIELD_SESSION_NAME')}</Label>
           <Input
             id="sessionName"
             value={session.sessionName}
             onChange={(e) => updateSession({ sessionName: e.target.value })}
-            placeholder="TRAINING SESSION MD+2"
+            placeholder={t('FIELD_SESSION_NAME_PLACEHOLDER')}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
+            <Label htmlFor="date">{t('FIELD_DATE')}</Label>
             <Input
               id="date"
               type="date"
@@ -36,7 +38,7 @@ export function GeneralDataForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="time">Time</Label>
+            <Label htmlFor="time">{t('FIELD_TIME')}</Label>
             <Input
               id="time"
               type="time"
@@ -48,7 +50,7 @@ export function GeneralDataForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="duration">Duration (minutes)</Label>
+            <Label htmlFor="duration">{t('FIELD_DURATION')}</Label>
             <Input
               id="duration"
               type="number"
@@ -57,7 +59,7 @@ export function GeneralDataForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="players">Number of Players</Label>
+            <Label htmlFor="players">{t('FIELD_PLAYERS_COUNT')}</Label>
             <Input
               id="players"
               type="number"
@@ -68,7 +70,7 @@ export function GeneralDataForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="load">Load Level: {session.loadLevel}/10</Label>
+          <Label htmlFor="load">{t('FIELD_LOAD_LEVEL')}: {session.loadLevel}/10</Label>
           <Slider
             id="load"
             min={1}
@@ -81,34 +83,34 @@ export function GeneralDataForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="equipment">Equipment</Label>
+          <Label htmlFor="equipment">{t('FIELD_EQUIPMENT')}</Label>
           <Input
             id="equipment"
             value={session.equipment}
             onChange={(e) => updateSession({ equipment: e.target.value })}
-            placeholder="Chips, bibs, cones, dummies, small goals (4), large portable goals"
+            placeholder={t('FIELD_EQUIPMENT_PLACEHOLDER')}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="objectives">Objectives</Label>
+          <Label htmlFor="objectives">{t('FIELD_OBJECTIVES')}</Label>
           <Textarea
             id="objectives"
             value={session.objectives}
             onChange={(e) => updateSession({ objectives: e.target.value })}
-            placeholder="Technical-Tactical focus"
+            placeholder={t('FIELD_OBJECTIVES_PLACEHOLDER')}
             rows={4}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="clubLogo">Club Logo URL</Label>
+          <Label htmlFor="clubLogo">{t('FIELD_CLUB_LOGO')}</Label>
           <Input
             id="clubLogo"
             type="url"
             value={session.clubLogoUrl}
             onChange={(e) => updateSession({ clubLogoUrl: e.target.value })}
-            placeholder="https://example.com/logo.png"
+            placeholder={t('FIELD_CLUB_LOGO_PLACEHOLDER')}
           />
         </div>
       </CardContent>

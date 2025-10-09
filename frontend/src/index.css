@@ -35,3 +35,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevent text selection during drag */
+@layer utilities {
+  .cursor-move {
+    cursor: move;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Global drag styles */
+  body.dragging,
+  body.dragging * {
+    cursor: move !important;
+    user-select: none !important;
+  }
+}

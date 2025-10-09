@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { ReactNode, cloneElement } from 'react'
+import { ReactNode, cloneElement, isValidElement } from 'react'
 
 interface SortableItemProps {
   id: string
@@ -27,9 +27,10 @@ export function SortableItem({ id, children }: SortableItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
     >
-      {cloneElement(children as React.ReactElement, { dragListeners: listeners })}
+      {isValidElement(children) && cloneElement(children, {
+        dragHandleProps: { ...attributes, ...listeners }
+      } as any)}
     </div>
   )
 }

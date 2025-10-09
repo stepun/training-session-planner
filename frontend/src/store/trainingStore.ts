@@ -37,7 +37,8 @@ export const useTrainingStore = create<TrainingStore>((set) => ({
         exercises: [...state.session.exercises, {
           ...exercise,
           coaching_points: exercise.coaching_points || [],
-          intensity: exercise.intensity || 'medium'
+          intensity: exercise.intensity || 'medium',
+          categories: exercise.categories || []
         }]
       }
     })),

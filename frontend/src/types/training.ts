@@ -1,7 +1,16 @@
+export type ExerciseCategory =
+  | 'warm-up'      // Разминка
+  | 'technique'    // Техника
+  | 'tactics'      // Тактика
+  | 'physical'     // Физика
+  | 'set-pieces'   // Стандарты
+  | 'cool-down'    // Заминка
+
 export interface Exercise {
   id: string
   name: string
-  type: 'warm-up' | 'main' | 'cool-down'
+  type: 'warm-up' | 'main' | 'cool-down' // Оставляем для обратной совместимости
+  categories: ExerciseCategory[] // Новое поле для мультивыбора категорий
   duration: number
   description: string
   equipment?: string
