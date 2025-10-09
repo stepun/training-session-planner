@@ -91,7 +91,7 @@ bot.on('message', (msg) => {
 });
 
 // Admin reply command
-bot.onText(/\/reply (\d+) (.+)/, (msg, match) => {
+bot.onText(/\/reply (\S+) (.+)/, (msg, match) => {
   const adminChatId = msg.chat.id;
 
   // Only admin can reply
