@@ -82,7 +82,7 @@ function App() {
           </div>
 
           {/* Right Panel - Preview */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div id="training-preview">
               <TrainingPreview />
             </div>
