@@ -117,5 +117,13 @@
   "ERROR_DIAGRAM_EMPTY": "Пожалуйста, нарисуйте что-нибудь",
   "ERROR_DIAGRAM_SAVE": "Не удалось сохранить схему",
 
+  "APP_TITLE": "Планировщик тренировок",
+  "LOADING_INITIALIZING": "Инициализация...",
+  "LOADING_MODULES": "Загрузка модулей...",
+  "LOADING_COMPONENTS": "Загрузка компонентов...",
+  "LOADING_RESOURCES": "Загрузка ресурсов...",
+  "LOADING_FINALIZING": "Завершение загрузки...",
+  "LOADING_COMPLETE": "Готово!",
+
   "MINUTES_SHORT": "мин"
 }

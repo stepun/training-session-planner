@@ -117,5 +117,13 @@
   "ERROR_DIAGRAM_EMPTY": "Please draw something first",
   "ERROR_DIAGRAM_SAVE": "Failed to save diagram",
 
+  "APP_TITLE": "Training Session Planner",
+  "LOADING_INITIALIZING": "Initializing...",
+  "LOADING_MODULES": "Loading modules...",
+  "LOADING_COMPONENTS": "Loading components...",
+  "LOADING_RESOURCES": "Loading resources...",
+  "LOADING_FINALIZING": "Finalizing...",
+  "LOADING_COMPLETE": "Ready!",
+
   "MINUTES_SHORT": "min"
 }

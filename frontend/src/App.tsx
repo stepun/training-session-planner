@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react'
 import { GeneralDataForm } from '@/components/GeneralDataForm'
 import { ExercisesList } from '@/components/ExercisesList'
 import { TrainingPreview } from '@/components/TrainingPreview'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { LoadingScreen } from '@/components/LoadingScreen'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { useTrainingStore } from '@/store/trainingStore'
@@ -13,6 +15,16 @@ import html2canvas from 'html2canvas'
 function App() {
   const { session } = useTrainingStore()
   const { t, locale } = useTranslation()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulate app initialization
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1500) // Show loading for at least 1.5 seconds
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleExportPDF = async () => {
     const doc = <PDFDocument session={session} locale={locale} />
@@ -55,6 +67,10 @@ function App() {
       console.error('Error exporting JPEG:', error)
       alert('Failed to export JPEG')
     }
+  }
+
+  if (isLoading) {
+    return <LoadingScreen />
   }
 
   return (
