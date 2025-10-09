@@ -170,7 +170,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     marginLeft: 4,
-    display: 'inline-block',
   },
 })
 
@@ -246,44 +245,6 @@ export function PDFDocument({ session, locale }: PDFDocumentProps) {
 
   const getCategoryTextColor = (): string => {
     return '#ffffff'  // white text for all categories
-  }
-
-  const getTypeLabel = (type: Exercise['type']): string => {
-    switch (type) {
-      case 'warm-up': return t('EXERCISE_TYPE_WARMUP').toUpperCase()
-      case 'main': return t('EXERCISE_TYPE_MAIN').toUpperCase()
-      case 'cool-down': return t('EXERCISE_TYPE_COOLDOWN').toUpperCase()
-    }
-  }
-
-  const getTypeColor = (type: Exercise['type']): string => {
-    switch (type) {
-      case 'warm-up': return '#22c55e'  // green-500
-      case 'main': return '#6b7280'     // gray-500
-      case 'cool-down': return '#3b82f6' // blue-500
-    }
-  }
-
-  const getIntensityLabel = (intensity?: Exercise['intensity']): string => {
-    if (!intensity) return 'MEDIUM'
-    switch (intensity) {
-      case 'low': return t('EXERCISE_INTENSITY_LOW').toUpperCase()
-      case 'medium': return t('EXERCISE_INTENSITY_MEDIUM').toUpperCase()
-      case 'high': return t('EXERCISE_INTENSITY_HIGH').toUpperCase()
-    }
-  }
-
-  const getIntensityBgColor = (intensity?: Exercise['intensity']): string => {
-    if (!intensity) intensity = 'medium'
-    switch (intensity) {
-      case 'low': return '#22c55e'    // green-500
-      case 'medium': return '#eab308' // yellow-500
-      case 'high': return '#ef4444'   // red-500
-    }
-  }
-
-  const getIntensityTextColor = (intensity?: Exercise['intensity']): string => {
-    return '#ffffff'  // white text for all
   }
 
   const totalDuration = session.exercises.reduce((sum, ex) => sum + ex.duration, 0)
@@ -472,7 +433,6 @@ export function PDFDocument({ session, locale }: PDFDocumentProps) {
                       fill="#374151"
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                      clipRule="evenodd"
                     />
                   </Svg>
                   <Text style={styles.exerciseDuration}>{exercise.duration} {t('MINUTES_SHORT')}</Text>
@@ -612,7 +572,6 @@ export function PDFDocument({ session, locale }: PDFDocumentProps) {
                             fill="#374151"
                             fillRule="evenodd"
                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                            clipRule="evenodd"
                           />
                         </Svg>
                         <Text style={styles.exerciseDuration}>{exercise.duration} {t('MINUTES_SHORT')}</Text>

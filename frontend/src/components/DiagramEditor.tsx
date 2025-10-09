@@ -108,7 +108,7 @@ export function DiagramEditor({ initialSnapshot, onSave, onCancel }: DiagramEdit
 
   // Customize UI to show only essential tools
   const overrides: TLUiOverrides = {
-    tools(editor, tools) {
+    tools(_editor, tools) {
       // Keep only basic drawing tools
       return {
         select: tools.select,

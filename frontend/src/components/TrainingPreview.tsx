@@ -57,39 +57,6 @@ export function TrainingPreview() {
     }
   }
 
-  const getTypeLabel = (type: Exercise['type']): string => {
-    switch (type) {
-      case 'warm-up': return t('EXERCISE_TYPE_WARMUP')
-      case 'main': return t('EXERCISE_TYPE_MAIN')
-      case 'cool-down': return t('EXERCISE_TYPE_COOLDOWN')
-    }
-  }
-
-  const getTypeColor = (type: Exercise['type']): string => {
-    switch (type) {
-      case 'warm-up': return 'bg-green-500 text-white'
-      case 'main': return 'bg-gray-500 text-white'
-      case 'cool-down': return 'bg-blue-500 text-white'
-    }
-  }
-
-  const getIntensityLabel = (intensity?: Exercise['intensity']): string => {
-    if (!intensity) return 'MEDIUM'
-    switch (intensity) {
-      case 'low': return t('EXERCISE_INTENSITY_LOW')
-      case 'medium': return t('EXERCISE_INTENSITY_MEDIUM')
-      case 'high': return t('EXERCISE_INTENSITY_HIGH')
-    }
-  }
-
-  const getIntensityColor = (intensity?: Exercise['intensity']): string => {
-    if (!intensity) intensity = 'medium'
-    switch (intensity) {
-      case 'low': return 'bg-green-500 text-white'
-      case 'medium': return 'bg-yellow-500 text-white'
-      case 'high': return 'bg-red-500 text-white'
-    }
-  }
 
   // Динамическая разбивка упражнений на страницы по высоте
   useEffect(() => {
