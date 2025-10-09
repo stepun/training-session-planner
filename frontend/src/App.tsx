@@ -4,7 +4,7 @@ import { ExercisesList } from '@/components/ExercisesList'
 import { TrainingPreview } from '@/components/TrainingPreview'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { LoadingScreen } from '@/components/LoadingScreen'
-import { SupportChat } from '@/components/SupportChat'
+import { UserChat } from '@/components/UserChat'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { useTrainingStore } from '@/store/trainingStore'
@@ -165,8 +165,8 @@ function App() {
         </div>
       </div>
 
-      {/* Support Chat */}
-      <SupportChat />
+      {/* User Chat */}
+      <UserChat />
     </div>
   )
 }

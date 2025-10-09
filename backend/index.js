@@ -167,7 +167,7 @@ app.get('/api/sessions', (req, res) => {
   res.json(sessions);
 });
 
-// Send message from web interface
+// Send message from web interface (admin to user)
 app.post('/api/send', async (req, res) => {
   const { chatId, message } = req.body;
 
@@ -190,8 +190,74 @@ app.post('/api/send', async (req, res) => {
 
     userSessions.get(chatId).messages.push(messageData);
 
-    // Send via Telegram
-    await bot.sendMessage(chatId, `📨 Ответ от администратора:\n\n${message}`);
+    // Try to send via Telegram (if chatId is numeric - Telegram user)
+    // If chatId starts with 'web_' - it's a web user, message stored only
+    if (!chatId.toString().startsWith('web_')) {
+      try {
+        await bot.sendMessage(chatId, `📨 Ответ от администратора:\n\n${message}`);
+      } catch (telegramError) {
+        console.error('Telegram send failed (user might be web-only):', telegramError.message);
+      }
+    }
+
+    res.json({ success: true, message: 'Message sent' });
+  } catch (error) {
+    console.error('Error sending message:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get user messages (for web users)
+app.get('/api/user-messages/:userId', (req, res) => {
+  const { userId } = req.params;
+
+  if (!userSessions.has(userId)) {
+    return res.json({ messages: [] });
+  }
+
+  const session = userSessions.get(userId);
+  res.json({ messages: session.messages });
+});
+
+// Send message from web user
+app.post('/api/user-send', async (req, res) => {
+  const { userId, message } = req.body;
+
+  if (!userId || !message) {
+    return res.status(400).json({ error: 'userId and message are required' });
+  }
+
+  try {
+    // Initialize session if doesn't exist
+    if (!userSessions.has(userId)) {
+      userSessions.set(userId, {
+        name: 'Web User',
+        messages: []
+      });
+
+      // Notify admin about new web user
+      bot.sendMessage(ADMIN_CHAT_ID,
+        `🆕 Новый пользователь с сайта:\n` +
+        `ID: ${userId}\n` +
+        `Тип: Web`
+      );
+    }
+
+    // Store message
+    const messageData = {
+      from: 'user',
+      text: message,
+      timestamp: Date.now()
+    };
+
+    userSessions.get(userId).messages.push(messageData);
+
+    // Forward to admin via Telegram
+    bot.sendMessage(ADMIN_CHAT_ID,
+      `💬 Сообщение от Web User (ID: ${userId}):\n\n${message}\n\n` +
+      `Чтобы ответить, используйте веб-интерфейс или отправьте:\n` +
+      `/reply ${userId} Ваш ответ`
+    );
 
     res.json({ success: true, message: 'Message sent' });
   } catch (error) {
