@@ -118,14 +118,20 @@ bot.onText(/\/reply (\S+) (.+)/, (msg, match) => {
 
   userSessions.get(userChatId).messages.push(messageData);
 
-  // Send to user
-  bot.sendMessage(userChatId,
-    `📨 Ответ от администратора:\n\n${replyText}`
-  ).then(() => {
-    bot.sendMessage(adminChatId, '✅ Ответ отправлен пользователю.');
-  }).catch((error) => {
-    bot.sendMessage(adminChatId, `❌ Ошибка отправки: ${error.message}`);
-  });
+  // Send to user (only if it's a Telegram user, not web user)
+  if (userChatId.toString().startsWith('web_')) {
+    // Web user - message stored only, they'll see it on website
+    bot.sendMessage(adminChatId, '✅ Ответ сохранён. Пользователь увидит его на сайте.');
+  } else {
+    // Telegram user - send via bot
+    bot.sendMessage(userChatId,
+      `📨 Ответ от администратора:\n\n${replyText}`
+    ).then(() => {
+      bot.sendMessage(adminChatId, '✅ Ответ отправлен пользователю.');
+    }).catch((error) => {
+      bot.sendMessage(adminChatId, `❌ Ошибка отправки: ${error.message}`);
+    });
+  }
 });
 
 // Admin list users command
