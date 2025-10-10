@@ -20,6 +20,7 @@ export function UserChat() {
   const [sending, setSending] = useState(false)
   const [userId, setUserId] = useState<string>('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   // Generate or retrieve user ID from localStorage
   useEffect(() => {
@@ -54,9 +55,11 @@ export function UserChat() {
     return () => clearInterval(interval)
   }, [isOpen, userId])
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change (only scroll the messages container, not the page)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
   }, [messages])
 
   const handleSendMessage = async () => {
@@ -134,7 +137,7 @@ export function UserChat() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 text-sm mt-8">
             <MessageCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
