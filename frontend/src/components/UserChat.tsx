@@ -115,7 +115,7 @@ export function UserChat() {
 
   return (
     <Card
-      className="fixed top-16 right-4 w-96 max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-5rem)] shadow-2xl flex flex-col z-50 overflow-hidden"
+      className="fixed top-16 left-4 md:left-auto md:right-4 w-full max-w-[calc(100vw-2rem)] md:w-96 h-[500px] max-h-[calc(100vh-5rem)] shadow-2xl flex flex-col z-50 overflow-hidden"
     >
       {/* Header */}
       <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
