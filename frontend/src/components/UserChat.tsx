@@ -105,8 +105,8 @@ export function UserChat() {
         className="h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg"
         style={{
           position: 'fixed',
-          bottom: window.innerWidth < 768 ? '80px' : '24px',
-          right: window.innerWidth < 768 ? '16px' : '24px',
+          bottom: '80px',
+          right: '16px',
           zIndex: 9999
         }}
         title="Chat with Support"
@@ -121,8 +121,8 @@ export function UserChat() {
       className="w-full max-w-[calc(100vw-2rem)] md:w-96 h-[calc(100vh-8rem)] md:h-[500px] shadow-2xl flex flex-col overflow-hidden"
       style={{
         position: 'fixed',
-        bottom: window.innerWidth < 768 ? '80px' : '24px',
-        right: window.innerWidth < 768 ? '16px' : '24px',
+        bottom: '80px',
+        right: '16px',
         zIndex: 9999
       }}
     >
