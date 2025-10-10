@@ -102,7 +102,13 @@ export function UserChat() {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg z-50"
+        className="h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg"
+        style={{
+          position: 'fixed',
+          bottom: window.innerWidth < 768 ? '80px' : '24px',
+          right: window.innerWidth < 768 ? '16px' : '24px',
+          zIndex: 9999
+        }}
         title="Chat with Support"
       >
         <MessageCircle className="h-6 w-6" />
@@ -111,7 +117,15 @@ export function UserChat() {
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-full max-w-[calc(100vw-2rem)] md:w-96 h-[calc(100vh-8rem)] md:h-[500px] shadow-2xl flex flex-col z-50 overflow-hidden">
+    <Card
+      className="w-full max-w-[calc(100vw-2rem)] md:w-96 h-[calc(100vh-8rem)] md:h-[500px] shadow-2xl flex flex-col overflow-hidden"
+      style={{
+        position: 'fixed',
+        bottom: window.innerWidth < 768 ? '80px' : '24px',
+        right: window.innerWidth < 768 ? '16px' : '24px',
+        zIndex: 9999
+      }}
+    >
       {/* Header */}
       <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
         <div>
