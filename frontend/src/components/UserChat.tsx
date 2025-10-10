@@ -102,7 +102,7 @@ export function UserChat() {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg z-50"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg z-50"
         title="Chat with Support"
       >
         <MessageCircle className="h-6 w-6" />
@@ -111,7 +111,7 @@ export function UserChat() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 h-[500px] shadow-2xl flex flex-col z-50 overflow-hidden">
+    <Card className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-full max-w-[calc(100vw-2rem)] md:w-96 h-[calc(100vh-8rem)] md:h-[500px] shadow-2xl flex flex-col z-50 overflow-hidden">
       {/* Header */}
       <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
         <div>
