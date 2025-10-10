@@ -125,5 +125,14 @@
   "LOADING_FINALIZING": "Finalizing...",
   "LOADING_COMPLETE": "Ready!",
 
-  "MINUTES_SHORT": "min"
+  "MINUTES_SHORT": "min",
+
+  "SUPPORT_CHAT_BUTTON": "Support",
+  "SUPPORT_CHAT_TITLE": "Support Chat",
+  "SUPPORT_CHAT_SUBTITLE": "We typically reply in a few minutes",
+  "SUPPORT_CHAT_START_CONVERSATION": "Start a conversation",
+  "SUPPORT_CHAT_START_MESSAGE": "Send us a message and we'll respond as soon as possible",
+  "SUPPORT_CHAT_TEAM": "Support Team",
+  "SUPPORT_CHAT_PLACEHOLDER": "Type your message...",
+  "SUPPORT_CHAT_FAILED": "Failed to send message"
 }

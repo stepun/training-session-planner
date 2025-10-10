@@ -125,5 +125,14 @@
   "LOADING_FINALIZING": "Завершение загрузки...",
   "LOADING_COMPLETE": "Готово!",
 
-  "MINUTES_SHORT": "мин"
+  "MINUTES_SHORT": "мин",
+
+  "SUPPORT_CHAT_BUTTON": "Поддержка",
+  "SUPPORT_CHAT_TITLE": "Чат поддержки",
+  "SUPPORT_CHAT_SUBTITLE": "Мы обычно отвечаем в течение нескольких минут",
+  "SUPPORT_CHAT_START_CONVERSATION": "Начать разговор",
+  "SUPPORT_CHAT_START_MESSAGE": "Отправьте нам сообщение, и мы ответим как можно скорее",
+  "SUPPORT_CHAT_TEAM": "Команда поддержки",
+  "SUPPORT_CHAT_PLACEHOLDER": "Введите ваше сообщение...",
+  "SUPPORT_CHAT_FAILED": "Не удалось отправить сообщение"
 }

@@ -86,11 +86,11 @@ export function UserChat() {
         }
         setMessages(prev => [...prev, newMessage])
       } else {
-        alert('Failed to send message')
+        alert(t('SUPPORT_CHAT_FAILED'))
       }
     } catch (error) {
       console.error('Failed to send message:', error)
-      alert('Failed to send message')
+      alert(t('SUPPORT_CHAT_FAILED'))
     } finally {
       setSending(false)
     }
@@ -108,10 +108,10 @@ export function UserChat() {
         variant="outline"
         size="sm"
         className="gap-2"
-        title="Chat with Support"
+        title={t('SUPPORT_CHAT_TITLE')}
       >
         <MessageCircle className="h-4 w-4" />
-        <span className="hidden sm:inline">Support</span>
+        <span className="hidden sm:inline">{t('SUPPORT_CHAT_BUTTON')}</span>
       </Button>
     )
   }
@@ -123,8 +123,8 @@ export function UserChat() {
       {/* Header */}
       <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
         <div>
-          <h3 className="font-bold">Support Chat</h3>
-          <p className="text-xs opacity-90">We typically reply in a few minutes</p>
+          <h3 className="font-bold">{t('SUPPORT_CHAT_TITLE')}</h3>
+          <p className="text-xs opacity-90">{t('SUPPORT_CHAT_SUBTITLE')}</p>
         </div>
         <Button
           onClick={() => setIsOpen(false)}
@@ -141,8 +141,8 @@ export function UserChat() {
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 text-sm mt-8">
             <MessageCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p className="font-semibold mb-1">Start a conversation</p>
-            <p className="text-xs">Send us a message and we'll respond as soon as possible</p>
+            <p className="font-semibold mb-1">{t('SUPPORT_CHAT_START_CONVERSATION')}</p>
+            <p className="text-xs">{t('SUPPORT_CHAT_START_MESSAGE')}</p>
           </div>
         ) : (
           messages.map((msg, idx) => (
@@ -158,7 +158,7 @@ export function UserChat() {
                 }`}
               >
                 {msg.from === 'admin' && (
-                  <p className="text-xs font-semibold mb-1 text-blue-600">Support Team</p>
+                  <p className="text-xs font-semibold mb-1 text-blue-600">{t('SUPPORT_CHAT_TEAM')}</p>
                 )}
                 <p className="text-sm whitespace-pre-wrap break-words">{msg.text}</p>
                 <p
@@ -183,7 +183,7 @@ export function UserChat() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder="Type your message..."
+            placeholder={t('SUPPORT_CHAT_PLACEHOLDER')}
             className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             disabled={sending}
           />
