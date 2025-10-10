@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MessageCircle, X, Send } from 'lucide-react'
@@ -99,29 +98,24 @@ export function UserChat() {
     return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
   }
 
-  const chatContent = !isOpen ? (
-    <Button
-      onClick={() => setIsOpen(true)}
-      className="h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg"
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 9999
-      }}
-      title="Chat with Support"
-    >
-      <MessageCircle className="h-6 w-6" />
-    </Button>
-  ) : (
+  if (!isOpen) {
+    return (
+      <Button
+        onClick={() => setIsOpen(true)}
+        variant="outline"
+        size="sm"
+        className="gap-2"
+        title="Chat with Support"
+      >
+        <MessageCircle className="h-4 w-4" />
+        <span className="hidden sm:inline">Support</span>
+      </Button>
+    )
+  }
+
+  return (
     <Card
-      className="w-full max-w-[calc(100vw-2rem)] md:w-96 h-[calc(100vh-8rem)] md:h-[500px] shadow-2xl flex flex-col overflow-hidden"
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 9999
-      }}
+      className="fixed top-16 right-4 w-96 max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-5rem)] shadow-2xl flex flex-col z-50 overflow-hidden"
     >
       {/* Header */}
       <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
@@ -206,7 +200,4 @@ export function UserChat() {
       </div>
     </Card>
   )
-
-  // Render using portal to ensure fixed positioning works correctly
-  return createPortal(chatContent, document.body)
 }

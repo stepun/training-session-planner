@@ -103,7 +103,10 @@ function App() {
                 <h1 className="text-2xl font-bold">{t('H1_TITLE')}</h1>
                 <p className="text-gray-600 text-sm">{t('H1_SUBTITLE')}</p>
               </div>
-              <LanguageSwitcher />
+              <div className="flex items-center gap-3">
+                <UserChat />
+                <LanguageSwitcher />
+              </div>
             </div>
           </div>
         </div>
@@ -166,9 +169,6 @@ function App() {
           </div>
         </div>
       </div>
-
-      {/* User Chat - Outside main container for proper fixed positioning */}
-      <UserChat />
     </>
   )
 }
