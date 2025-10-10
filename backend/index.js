@@ -56,24 +56,10 @@ bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  // Debug logging
-  console.log('[DEBUG] Message received:', {
-    chatId,
-    text,
-    hasReply: !!msg.reply_to_message,
-    isAdmin: chatId.toString() === ADMIN_CHAT_ID
-  });
-
   // Check if this is a reply from admin
   if (chatId.toString() === ADMIN_CHAT_ID && msg.reply_to_message) {
     const replyToMessageId = msg.reply_to_message.message_id;
     const userId = messageToUser.get(replyToMessageId);
-
-    console.log('[DEBUG] Reply detected:', {
-      replyToMessageId,
-      userId,
-      messageToUserSize: messageToUser.size
-    });
 
     if (userId) {
       // This is a reply to a user message
@@ -147,11 +133,6 @@ bot.on('message', (msg) => {
   ).then((sentMessage) => {
     // Store message_id -> userId mapping
     messageToUser.set(sentMessage.message_id, chatId.toString());
-    console.log('[DEBUG] Stored mapping:', {
-      messageId: sentMessage.message_id,
-      userId: chatId.toString(),
-      totalMappings: messageToUser.size
-    });
   });
 
   // Confirm receipt to user
@@ -334,11 +315,6 @@ app.post('/api/user-send', async (req, res) => {
     ).then((sentMessage) => {
       // Store message_id -> userId mapping
       messageToUser.set(sentMessage.message_id, userId);
-      console.log('[DEBUG] Stored web user mapping:', {
-        messageId: sentMessage.message_id,
-        userId: userId,
-        totalMappings: messageToUser.size
-      });
     });
 
     res.json({ success: true, message: 'Message sent' });
