@@ -21,6 +21,9 @@ const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 // In-memory storage for messages (в продакшене использовать БД)
 const userSessions = new Map(); // Map<userId, { name: string, messages: Message[] }>
 
+// Map to store message_id -> userId for reply functionality
+const messageToUser = new Map(); // Map<message_id, userId>
+
 // Bot Commands
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -48,15 +51,58 @@ bot.onText(/\/start/, (msg) => {
   );
 });
 
-// Handle user messages
+// Handle replies from admin (using Telegram "Reply" function)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
+  // Check if this is a reply from admin
+  if (chatId.toString() === ADMIN_CHAT_ID && msg.reply_to_message) {
+    const replyToMessageId = msg.reply_to_message.message_id;
+    const userId = messageToUser.get(replyToMessageId);
+
+    if (userId) {
+      // This is a reply to a user message
+      const replyText = text;
+
+      // Check if user session exists
+      if (!userSessions.has(userId)) {
+        bot.sendMessage(ADMIN_CHAT_ID, '❌ Пользователь не найден.');
+        return;
+      }
+
+      // Store admin message
+      const messageData = {
+        from: 'admin',
+        text: replyText,
+        timestamp: Date.now()
+      };
+
+      userSessions.get(userId).messages.push(messageData);
+
+      // Send to user (only if it's a Telegram user, not web user)
+      if (userId.toString().startsWith('web_')) {
+        // Web user - message stored only, they'll see it on website
+        bot.sendMessage(ADMIN_CHAT_ID, '✅ Ответ сохранён. Пользователь увидит его на сайте.');
+      } else {
+        // Telegram user - send via bot
+        bot.sendMessage(userId,
+          `📨 Ответ от администратора:\n\n${replyText}`
+        ).then(() => {
+          bot.sendMessage(ADMIN_CHAT_ID, '✅ Ответ отправлен пользователю.');
+        }).catch((error) => {
+          bot.sendMessage(ADMIN_CHAT_ID, `❌ Ошибка отправки: ${error.message}`);
+        });
+      }
+
+      return; // Important: stop processing this message
+    }
+  }
+
   // Skip commands
   if (text && text.startsWith('/')) return;
 
-  // Skip messages from admin
+  // Skip messages from admin (that are not replies)
   if (chatId.toString() === ADMIN_CHAT_ID) return;
 
   const userName = msg.from.first_name || 'User';
@@ -79,12 +125,15 @@ bot.on('message', (msg) => {
 
   userSessions.get(chatId).messages.push(messageData);
 
-  // Forward to admin
+  // Forward to admin and store message_id for reply
   bot.sendMessage(ADMIN_CHAT_ID,
     `💬 Сообщение от ${userName} (ID: ${chatId}):\n\n${text}\n\n` +
-    `Чтобы ответить, отправьте сообщение в формате:\n` +
+    `✏️ Используйте "Ответить" или команду:\n` +
     `/reply ${chatId} Ваш ответ`
-  );
+  ).then((sentMessage) => {
+    // Store message_id -> userId mapping
+    messageToUser.set(sentMessage.message_id, chatId.toString());
+  });
 
   // Confirm receipt to user
   bot.sendMessage(chatId, '✅ Сообщение отправлено администратору.');
@@ -258,12 +307,15 @@ app.post('/api/user-send', async (req, res) => {
 
     userSessions.get(userId).messages.push(messageData);
 
-    // Forward to admin via Telegram
+    // Forward to admin via Telegram and store message_id for reply
     bot.sendMessage(ADMIN_CHAT_ID,
       `💬 Сообщение от Web User (ID: ${userId}):\n\n${message}\n\n` +
-      `Чтобы ответить, используйте веб-интерфейс или отправьте:\n` +
+      `✏️ Используйте "Ответить" или команду:\n` +
       `/reply ${userId} Ваш ответ`
-    );
+    ).then((sentMessage) => {
+      // Store message_id -> userId mapping
+      messageToUser.set(sentMessage.message_id, userId);
+    });
 
     res.json({ success: true, message: 'Message sent' });
   } catch (error) {
