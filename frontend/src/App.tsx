@@ -93,81 +93,83 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">{t('H1_TITLE')}</h1>
-              <p className="text-gray-600 text-sm">{t('H1_SUBTITLE')}</p>
+    <>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold">{t('H1_TITLE')}</h1>
+                <p className="text-gray-600 text-sm">{t('H1_SUBTITLE')}</p>
+              </div>
+              <LanguageSwitcher />
             </div>
-            <LanguageSwitcher />
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Panel - Forms */}
-          <div className="space-y-6">
-            <GeneralDataForm />
-            <ExercisesList />
-          </div>
-
-          {/* Right Panel - Preview */}
-          <div className="space-y-6">
-            <div id="training-preview">
-              <TrainingPreview />
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Panel - Forms */}
+            <div className="space-y-6">
+              <GeneralDataForm />
+              <ExercisesList />
             </div>
 
-            {/* Export Buttons */}
-            <div style={{ width: '210mm', margin: '0 auto', marginTop: '20px' }}>
-              <div className="px-8 grid grid-cols-2 gap-3">
-                <Button
-                  onClick={handleExportPDF}
-                  disabled={isExporting}
-                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50"
-                >
-                  {isExporting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      {t('BUTTON_SAVING') || 'Exporting...'}
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4 mr-2" />
-                      {t('BUTTON_EXPORT_PDF')}
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={handleExportJPEG}
-                  disabled={isExporting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {isExporting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      {t('BUTTON_SAVING') || 'Exporting...'}
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4 mr-2" />
-                      {t('BUTTON_EXPORT_JPEG')}
-                    </>
-                  )}
-                </Button>
+            {/* Right Panel - Preview */}
+            <div className="space-y-6">
+              <div id="training-preview">
+                <TrainingPreview />
+              </div>
+
+              {/* Export Buttons */}
+              <div style={{ width: '210mm', margin: '0 auto', marginTop: '20px' }}>
+                <div className="px-8 grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={handleExportPDF}
+                    disabled={isExporting}
+                    className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                  >
+                    {isExporting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        {t('BUTTON_SAVING') || 'Exporting...'}
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4 mr-2" />
+                        {t('BUTTON_EXPORT_PDF')}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={handleExportJPEG}
+                    disabled={isExporting}
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {isExporting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        {t('BUTTON_SAVING') || 'Exporting...'}
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4 mr-2" />
+                        {t('BUTTON_EXPORT_JPEG')}
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* User Chat */}
+      {/* User Chat - Outside main container for proper fixed positioning */}
       <UserChat />
-    </div>
+    </>
   )
 }
 
