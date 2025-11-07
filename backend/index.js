@@ -61,6 +61,10 @@ bot.on('message', (msg) => {
     const replyToMessageId = msg.reply_to_message.message_id;
     const userId = messageToUser.get(replyToMessageId);
 
+    console.log('[REPLY] Admin replied to message_id:', replyToMessageId);
+    console.log('[REPLY] Found userId:', userId);
+    console.log('[REPLY] messageToUser Map size:', messageToUser.size);
+
     if (userId) {
       // This is a reply to a user message
       const replyText = text;
@@ -79,10 +83,13 @@ bot.on('message', (msg) => {
       };
 
       userSessions.get(userId).messages.push(messageData);
+      console.log('[SAVE] Saved admin reply for userId:', userId);
+      console.log('[SAVE] Total messages for this user:', userSessions.get(userId).messages.length);
 
       // Send to user (only if it's a Telegram user, not web user)
       if (userId.toString().startsWith('web_')) {
         // Web user - message stored only, they'll see it on website
+        console.log('[WEB] This is a web user, storing message only');
         bot.sendMessage(ADMIN_CHAT_ID, '✅ Ответ сохранён. Пользователь увидит его на сайте.');
       } else {
         // Telegram user - send via bot
@@ -315,6 +322,8 @@ app.post('/api/user-send', async (req, res) => {
     ).then((sentMessage) => {
       // Store message_id -> userId mapping
       messageToUser.set(sentMessage.message_id, userId);
+      console.log('[STORE] Stored mapping: message_id', sentMessage.message_id, '-> userId', userId);
+      console.log('[STORE] messageToUser Map size:', messageToUser.size);
     });
 
     res.json({ success: true, message: 'Message sent' });
