@@ -30,6 +30,8 @@ services:
     container_name: training-planner-backend
     ports:
       - "3001:3001"
+    volumes:
+      - backend_data:/app/data
     environment:
       - NODE_ENV=production
       - PORT=3001
@@ -39,3 +41,4 @@ services:
 
 volumes:
   frontend_node_modules:
+  backend_data:

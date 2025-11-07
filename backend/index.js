@@ -2,6 +2,8 @@ const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -18,11 +20,63 @@ const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || '120962578';
 // Initialize bot
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
-// In-memory storage for messages (в продакшене использовать БД)
+// Persistence file paths
+const DATA_DIR = path.join(__dirname, 'data');
+const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
+const MESSAGE_MAP_FILE = path.join(DATA_DIR, 'messageMap.json');
+
+// Create data directory if it doesn't exist
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// In-memory storage for messages (с персистентностью на диск)
 const userSessions = new Map(); // Map<userId, { name: string, messages: Message[] }>
 
 // Map to store message_id -> userId for reply functionality
 const messageToUser = new Map(); // Map<message_id, userId>
+
+// Load data from disk
+function loadData() {
+  try {
+    if (fs.existsSync(SESSIONS_FILE)) {
+      const sessionsData = JSON.parse(fs.readFileSync(SESSIONS_FILE, 'utf8'));
+      for (const [key, value] of Object.entries(sessionsData)) {
+        userSessions.set(key, value);
+      }
+      console.log('[LOAD] Loaded', userSessions.size, 'user sessions');
+    }
+
+    if (fs.existsSync(MESSAGE_MAP_FILE)) {
+      const mapData = JSON.parse(fs.readFileSync(MESSAGE_MAP_FILE, 'utf8'));
+      for (const [key, value] of Object.entries(mapData)) {
+        messageToUser.set(parseInt(key), value);
+      }
+      console.log('[LOAD] Loaded', messageToUser.size, 'message mappings');
+    }
+  } catch (error) {
+    console.error('[LOAD] Error loading data:', error);
+  }
+}
+
+// Save data to disk
+function saveData() {
+  try {
+    // Convert Map to Object for JSON serialization
+    const sessionsObj = Object.fromEntries(userSessions);
+    fs.writeFileSync(SESSIONS_FILE, JSON.stringify(sessionsObj, null, 2));
+
+    const mapObj = Object.fromEntries(messageToUser);
+    fs.writeFileSync(MESSAGE_MAP_FILE, JSON.stringify(mapObj, null, 2));
+
+    console.log('[SAVE] Data persisted to disk');
+  } catch (error) {
+    console.error('[SAVE] Error saving data:', error);
+  }
+}
+
+// Load existing data on startup
+loadData();
 
 // Bot Commands
 bot.onText(/\/start/, (msg) => {
@@ -85,6 +139,7 @@ bot.on('message', (msg) => {
       userSessions.get(userId).messages.push(messageData);
       console.log('[SAVE] Saved admin reply for userId:', userId);
       console.log('[SAVE] Total messages for this user:', userSessions.get(userId).messages.length);
+      saveData(); // Persist to disk
 
       // Send to user (only if it's a Telegram user, not web user)
       if (userId.toString().startsWith('web_')) {
@@ -140,6 +195,7 @@ bot.on('message', (msg) => {
   ).then((sentMessage) => {
     // Store message_id -> userId mapping
     messageToUser.set(sentMessage.message_id, chatId.toString());
+    saveData(); // Persist to disk
   });
 
   // Confirm receipt to user
@@ -173,6 +229,7 @@ bot.onText(/\/reply (\S+) (.+)/, (msg, match) => {
   };
 
   userSessions.get(userChatId).messages.push(messageData);
+  saveData(); // Persist to disk
 
   // Send to user (only if it's a Telegram user, not web user)
   if (userChatId.toString().startsWith('web_')) {
@@ -324,6 +381,7 @@ app.post('/api/user-send', async (req, res) => {
       messageToUser.set(sentMessage.message_id, userId);
       console.log('[STORE] Stored mapping: message_id', sentMessage.message_id, '-> userId', userId);
       console.log('[STORE] messageToUser Map size:', messageToUser.size);
+      saveData(); // Persist to disk
     });
 
     res.json({ success: true, message: 'Message sent' });
