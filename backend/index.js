@@ -23,7 +23,6 @@ const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 // Persistence file paths
 const DATA_DIR = path.join(__dirname, 'data');
 const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
-const MESSAGE_MAP_FILE = path.join(DATA_DIR, 'messageMap.json');
 
 // Create data directory if it doesn't exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -32,9 +31,6 @@ if (!fs.existsSync(DATA_DIR)) {
 
 // In-memory storage for messages (с персистентностью на диск)
 const userSessions = new Map(); // Map<userId, { name: string, messages: Message[] }>
-
-// Map to store message_id -> userId for reply functionality
-const messageToUser = new Map(); // Map<message_id, userId>
 
 // Load data from disk
 function loadData() {
@@ -45,14 +41,6 @@ function loadData() {
         userSessions.set(key, value);
       }
       console.log('[LOAD] Loaded', userSessions.size, 'user sessions');
-    }
-
-    if (fs.existsSync(MESSAGE_MAP_FILE)) {
-      const mapData = JSON.parse(fs.readFileSync(MESSAGE_MAP_FILE, 'utf8'));
-      for (const [key, value] of Object.entries(mapData)) {
-        messageToUser.set(parseInt(key), value);
-      }
-      console.log('[LOAD] Loaded', messageToUser.size, 'message mappings');
     }
   } catch (error) {
     console.error('[LOAD] Error loading data:', error);
@@ -65,9 +53,6 @@ function saveData() {
     // Convert Map to Object for JSON serialization
     const sessionsObj = Object.fromEntries(userSessions);
     fs.writeFileSync(SESSIONS_FILE, JSON.stringify(sessionsObj, null, 2));
-
-    const mapObj = Object.fromEntries(messageToUser);
-    fs.writeFileSync(MESSAGE_MAP_FILE, JSON.stringify(mapObj, null, 2));
 
     console.log('[SAVE] Data persisted to disk');
   } catch (error) {
@@ -112,12 +97,16 @@ bot.on('message', (msg) => {
 
   // Check if this is a reply from admin
   if (chatId.toString() === ADMIN_CHAT_ID && msg.reply_to_message) {
-    const replyToMessageId = msg.reply_to_message.message_id;
-    const userId = messageToUser.get(replyToMessageId);
+    const originalText = msg.reply_to_message.text || '';
+    const idMatch = originalText.match(/ID(?:\sсессии)?:\s*(.+)/);
+    let userId = idMatch ? idMatch[1].trim() : null;
 
-    console.log('[REPLY] Admin replied to message_id:', replyToMessageId);
-    console.log('[REPLY] Found userId:', userId);
-    console.log('[REPLY] messageToUser Map size:', messageToUser.size);
+    // Telegram user IDs are stored as numbers in the Map, try numeric lookup
+    if (userId && !userSessions.has(userId) && /^\d+$/.test(userId)) {
+      userId = parseInt(userId);
+    }
+
+    console.log('[REPLY] Admin replied, extracted userId:', userId);
 
     if (userId) {
       // This is a reply to a user message
@@ -186,17 +175,17 @@ bot.on('message', (msg) => {
   };
 
   userSessions.get(chatId).messages.push(messageData);
+  saveData(); // Persist to disk
 
-  // Forward to admin and store message_id for reply
+  // Forward to admin
+  const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
   bot.sendMessage(ADMIN_CHAT_ID,
-    `💬 Сообщение от ${userName} (ID: ${chatId}):\n\n${text}\n\n` +
-    `✏️ Используйте "Ответить" или команду:\n` +
-    `/reply ${chatId} Ваш ответ`
-  ).then((sentMessage) => {
-    // Store message_id -> userId mapping
-    messageToUser.set(sentMessage.message_id, chatId.toString());
-    saveData(); // Persist to disk
-  });
+    `📩 Новое сообщение\n\n` +
+    `👤 ${userName}\n` +
+    `🆔 ID: ${chatId}\n` +
+    `📝 Сообщение:\n${text}\n\n` +
+    `⏰ Время: ${timestamp}`
+  );
 
   // Confirm receipt to user
   bot.sendMessage(chatId, '✅ Сообщение отправлено администратору.');
@@ -370,19 +359,16 @@ app.post('/api/user-send', async (req, res) => {
     };
 
     userSessions.get(userId).messages.push(messageData);
+    saveData(); // Persist to disk
 
-    // Forward to admin via Telegram and store message_id for reply
+    // Forward to admin via Telegram
+    const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
     bot.sendMessage(ADMIN_CHAT_ID,
-      `💬 Сообщение от Web User (ID: ${userId}):\n\n${message}\n\n` +
-      `✏️ Используйте "Ответить" или команду:\n` +
-      `/reply ${userId} Ваш ответ`
-    ).then((sentMessage) => {
-      // Store message_id -> userId mapping
-      messageToUser.set(sentMessage.message_id, userId);
-      console.log('[STORE] Stored mapping: message_id', sentMessage.message_id, '-> userId', userId);
-      console.log('[STORE] messageToUser Map size:', messageToUser.size);
-      saveData(); // Persist to disk
-    });
+      `📩 Новое сообщение с сайта\n\n` +
+      `👤 ID сессии: ${userId}\n` +
+      `📝 Сообщение:\n${message}\n\n` +
+      `⏰ Время: ${timestamp}`
+    );
 
     res.json({ success: true, message: 'Message sent' });
   } catch (error) {
