@@ -50,20 +50,20 @@ export function UserChat() {
           const adminMessages = msgs.filter(m => m.from === 'admin')
           const newAdminCount = adminMessages.length
 
-          if (!isOpen && newAdminCount > lastSeenCountRef.current && lastSeenCountRef.current > 0) {
-            const newCount = newAdminCount - lastSeenCountRef.current
-            setUnreadCount(prev => prev + newCount)
-            const lastAdmin = adminMessages[adminMessages.length - 1]
-            setPopup(lastAdmin.text)
-            setTimeout(() => setPopup(null), 5000)
+          if (!isOpen && newAdminCount > lastSeenCountRef.current) {
+            if (lastSeenCountRef.current > 0) {
+              const newCount = newAdminCount - lastSeenCountRef.current
+              setUnreadCount(prev => prev + newCount)
+              const lastAdmin = adminMessages[adminMessages.length - 1]
+              setPopup(lastAdmin.text)
+              setTimeout(() => setPopup(null), 5000)
+            }
+            lastSeenCountRef.current = newAdminCount
           }
 
           if (isOpen) {
             lastSeenCountRef.current = newAdminCount
             setUnreadCount(0)
-          } else if (lastSeenCountRef.current === 0 && newAdminCount > 0) {
-            // First load — just sync without showing notifications
-            lastSeenCountRef.current = newAdminCount
           }
         }
       } catch (error) {
@@ -138,7 +138,7 @@ export function UserChat() {
       <div className="relative">
         {popup && (
           <div
-            className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-3 cursor-pointer animate-in fade-in slide-in-from-bottom-2"
+            className="absolute top-full right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-3 cursor-pointer z-50 animate-in fade-in slide-in-from-top-2"
             onClick={() => { setIsOpen(true); setPopup(null) }}
           >
             <p className="text-xs font-semibold text-blue-600 mb-1">{t('SUPPORT_CHAT_TEAM')}</p>
