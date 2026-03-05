@@ -19,30 +19,52 @@ export function UserChat() {
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [userId, setUserId] = useState<string>('')
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [popup, setPopup] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const lastSeenCountRef = useRef(0)
 
   // Generate or retrieve user ID from localStorage
   useEffect(() => {
     let storedUserId = localStorage.getItem('chatUserId')
     if (!storedUserId) {
-      // Generate unique ID based on timestamp and random number
       storedUserId = `web_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       localStorage.setItem('chatUserId', storedUserId)
     }
     setUserId(storedUserId)
   }, [])
 
-  // Fetch messages every 3 seconds when chat is open
+  // Poll messages always (even when closed) to detect new admin messages
   useEffect(() => {
-    if (!isOpen || !userId) return
+    if (!userId) return
 
     const fetchMessages = async () => {
       try {
         const response = await fetch(`${API_URL}/user-messages/${userId}`)
         if (response.ok) {
           const data = await response.json()
-          setMessages(data.messages || [])
+          const msgs: Message[] = data.messages || []
+          setMessages(msgs)
+
+          const adminMessages = msgs.filter(m => m.from === 'admin')
+          const newAdminCount = adminMessages.length
+
+          if (!isOpen && newAdminCount > lastSeenCountRef.current && lastSeenCountRef.current > 0) {
+            const newCount = newAdminCount - lastSeenCountRef.current
+            setUnreadCount(prev => prev + newCount)
+            const lastAdmin = adminMessages[adminMessages.length - 1]
+            setPopup(lastAdmin.text)
+            setTimeout(() => setPopup(null), 5000)
+          }
+
+          if (isOpen) {
+            lastSeenCountRef.current = newAdminCount
+            setUnreadCount(0)
+          } else if (lastSeenCountRef.current === 0 && newAdminCount > 0) {
+            // First load — just sync without showing notifications
+            lastSeenCountRef.current = newAdminCount
+          }
         }
       } catch (error) {
         console.error('Failed to fetch messages:', error)
@@ -53,7 +75,17 @@ export function UserChat() {
     const interval = setInterval(fetchMessages, 3000)
 
     return () => clearInterval(interval)
-  }, [isOpen, userId])
+  }, [userId, isOpen])
+
+  // Mark as read when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      setUnreadCount(0)
+      setPopup(null)
+      const adminCount = messages.filter(m => m.from === 'admin').length
+      lastSeenCountRef.current = adminCount
+    }
+  }, [isOpen])
 
   // Scroll to bottom when messages change (only scroll the messages container, not the page)
   useEffect(() => {
@@ -103,16 +135,32 @@ export function UserChat() {
 
   if (!isOpen) {
     return (
-      <Button
-        onClick={() => setIsOpen(true)}
-        variant="outline"
-        size="sm"
-        className="gap-2"
-        title={t('SUPPORT_CHAT_TITLE')}
-      >
-        <MessageCircle className="h-4 w-4" />
-        <span className="hidden sm:inline">{t('SUPPORT_CHAT_BUTTON')}</span>
-      </Button>
+      <div className="relative">
+        {popup && (
+          <div
+            className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-3 cursor-pointer animate-in fade-in slide-in-from-bottom-2"
+            onClick={() => { setIsOpen(true); setPopup(null) }}
+          >
+            <p className="text-xs font-semibold text-blue-600 mb-1">{t('SUPPORT_CHAT_TEAM')}</p>
+            <p className="text-sm text-gray-800 line-clamp-3">{popup}</p>
+          </div>
+        )}
+        <Button
+          onClick={() => setIsOpen(true)}
+          variant="outline"
+          size="sm"
+          className="gap-2 relative"
+          title={t('SUPPORT_CHAT_TITLE')}
+        >
+          <MessageCircle className="h-4 w-4" />
+          <span className="hidden sm:inline">{t('SUPPORT_CHAT_BUTTON')}</span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1">
+              {unreadCount}
+            </span>
+          )}
+        </Button>
+      </div>
     )
   }
 
