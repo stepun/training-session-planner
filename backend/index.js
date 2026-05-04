@@ -20,6 +20,24 @@ const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || '120962578';
 // Initialize bot
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
+// Restart polling after EFATAL (DNS/network) — node-telegram-bot-api stops polling
+// permanently on EFATAL and never recovers on its own.
+bot.on('polling_error', async (error) => {
+  console.error('[POLLING_ERROR]', error.code, error.message);
+  if (error.code === 'EFATAL') {
+    try { await bot.stopPolling({ cancel: true }); } catch (e) {}
+    setTimeout(async () => {
+      try {
+        await bot.startPolling({ restart: true });
+        console.log('[POLLING] Restarted after EFATAL');
+      } catch (e) {
+        console.error('[POLLING] Restart failed, exiting for docker restart:', e.message);
+        process.exit(1);
+      }
+    }, 10000);
+  }
+});
+
 // Persistence file paths
 const DATA_DIR = path.join(__dirname, 'data');
 const SESSIONS_FILE = path.join(DATA_DIR, 'sessions.json');
